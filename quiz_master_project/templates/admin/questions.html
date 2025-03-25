@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questions - Quiz Master</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Quiz Master Admin</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('view_chapters', subject_id=quiz.chapter.subject.id) }}">{{ quiz.chapter.subject.name }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('view_quizzes', chapter_id=quiz.chapter.id) }}">{{ quiz.chapter.name }}</a></li>
+                <li class="breadcrumb-item active">Quiz ({{ quiz.date_of_quiz.strftime('%Y-%m-%d') }})</li>
+            </ol>
+        </nav>
+
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5>Quiz Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Date:</strong> {{ quiz.date_of_quiz.strftime('%Y-%m-%d') }}</p>
+                        <p><strong>Duration:</strong> {{ quiz.time_duration }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Chapter:</strong> {{ quiz.chapter.name }}</p>
+                        <p><strong>Subject:</strong> {{ quiz.chapter.subject.name }}</p>
+                    </div>
+                </div>
+                {% if quiz.remarks %}
+                    <p><strong>Remarks:</strong> {{ quiz.remarks }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5>Questions</h5>
+                <a href="{{ url_for('add_question', quiz_id=quiz.id) }}" class="btn btn-sm btn-light">
+                    <i class="fas fa-plus"></i> Add Question
+                </a>
+            </div>
+            <div class="card-body">
+                {% if quiz.questions %}
+                    <div class="accordion" id="questionAccordion">
+                        {% for question in quiz.questions %}
+                            <div class="card mb-3">
+                                <div class="card-header d-flex justify-content-between align-items-center" id="heading{{ question.id }}">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-toggle="collapse" 
+                                                data-target="#collapse{{ question.id }}" aria-expanded="true" 
+                                                aria-controls="collapse{{ question.id }}">
+                                            Question {{ loop.index }}
+                                        </button>
+                                    </h5>
+                                    <div>
+                                        <a href="#" class="btn btn-warning btn-sm mr-2">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <a href="#" class="btn btn-danger btn-sm" 
+                                          onclick="return confirm('Are you sure you want to delete this question?')">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div id="collapse{{ question.id }}" class="collapse" aria-labelledby="heading{{ question.id }}" 
+                                     data-parent="#questionAccordion">
+                                    <div class="card-body">
+                                        <p><strong>Question:</strong> {{ question.question_statement }}</p>
+                                        <p><strong>Options:</strong></p>
+                                        <ol>
+                                            <li {% if question.correct_option == 1 %}class="text-success font-weight-bold"{% endif %}>
+                                                {{ question.option1 }} {% if question.correct_option == 1 %}(Correct){% endif %}
+                                            </li>
+                                            <li {% if question.correct_option == 2 %}class="text-success font-weight-bold"{% endif %}>
+                                                {{ question.option2 }} {% if question.correct_option == 2 %}(Correct){% endif %}
+                                            </li>
+                                            <li {% if question.correct_option == 3 %}class="text-success font-weight-bold"{% endif %}>
+                                                {{ question.option3 }} {% if question.correct_option == 3 %}(Correct){% endif %}
+                                            </li>
+                                            <li {% if question.correct_option == 4 %}class="text-success font-weight-bold"{% endif %}>
+                                                {{ question.option4 }} {% if question.correct_option == 4 %}(Correct){% endif %}
+                                            </li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-center">No questions added for this quiz yet. Add some questions to get started!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
