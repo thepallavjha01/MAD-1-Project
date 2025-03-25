@@ -11,7 +11,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialize database
 init_db(app)
 
-# Authentication routes
+# Authentication route
 app.route('/')(auth.home)
 app.route('/login', methods=['GET', 'POST'])(auth.login)
 app.route('/register', methods=['GET', 'POST'])(auth.register)
