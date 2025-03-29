@@ -49,11 +49,15 @@ def delete_subject(subject_id):
     if not session.get('is_admin'):
         return redirect(url_for('login'))
     
-    subject = Subject.query.get_or_404(subject_id)
-    db.session.delete(subject)
-    db.session.commit()
+    try:
+        subject = Subject.query.get_or_404(subject_id)
+        db.session.delete(subject)
+        db.session.commit()
+        flash('Subject deleted successfully')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting subject: {str(e)}')
     
-    flash('Subject deleted successfully')
     return redirect(url_for('admin_dashboard'))
 
 # Chapter CRUD operations
