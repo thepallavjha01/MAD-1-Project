@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Summary - Quiz Master{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Admin Summary Dashboard</h2>
+    <p>Overview of subject-wise top scorers and user attempts</p>
+    
+    <div class="row mt-4">
+        {% for data in summary_data %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4>{{ data.subject.name }}</h4>
+                    <p class="mb-0">{{ data.subject.description }}</p>
+                </div>
+                <div class="card-body">
+                    <h5>Top Scorers</h5>
+                    {% if data.top_scorers %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Total Score</th>
+                                <th>Attempts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for scorer in data.top_scorers %}
+                            <tr>
+                                <td>{{ scorer.full_name }}</td>
+                                <td>{{ scorer.username }}</td>
+                                <td>{{ scorer.total_score }}</td>
+                                <td>{{ scorer.attempts }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p>No quiz attempts recorded for this subject yet.</p>
+                    {% endif %}
+                    
+                    <h5 class="mt-4">User Attempts Summary</h5>
+                    <p>Total Attempts: {{ data.total_attempts }}</p>
+                    {% if data.user_attempts %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Attempts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user_id, attempt_data in data.user_attempts.items() %}
+                            <tr>
+                                <td>{{ attempt_data.full_name }}</td>
+                                <td>{{ attempt_data.username }}</td>
+                                <td>{{ attempt_data.attempts }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p>No quiz attempts recorded for this subject yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="mt-3 mb-5">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

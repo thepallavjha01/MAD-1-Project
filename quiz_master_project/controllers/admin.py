@@ -1,6 +1,7 @@
 from flask import render_template, request, redirect, url_for, session, flash
 from datetime import datetime
-from models.db_setup import db, Subject, Chapter, Quiz, Question, User
+from models.db_setup import db, Subject, Chapter, Quiz, Question, User, Score
+from sqlalchemy import func
 
 def admin_dashboard():
     if not session.get('is_admin'):
@@ -194,3 +195,64 @@ def delete_question(question_id):
     
     flash('Question deleted successfully')
     return redirect(url_for('view_questions', quiz_id=quiz_id))
+
+def admin_summary():
+    if not session.get('is_admin'):
+        return redirect(url_for('login'))
+    
+    # Get all subjects
+    subjects = Subject.query.all()
+    summary_data = []
+    
+    for subject in subjects:
+        subject_data = {
+            'subject': subject,
+            'top_scorers': [],
+            'total_attempts': 0,
+            'user_attempts': {}
+        }
+        
+        # Get all quizzes for this subject through chapters
+        quiz_ids = []
+        for chapter in subject.chapters:
+            for quiz in chapter.quizzes:
+                quiz_ids.append(quiz.id)
+        
+        if not quiz_ids:
+            summary_data.append(subject_data)
+            continue
+        
+        # Get top scorers for this subject
+        top_scores = db.session.query(
+            User.id,
+            User.username,
+            User.full_name,
+            func.sum(Score.total_scored).label('total_score'),
+            func.count(Score.id).label('attempts')
+        ).join(Score).filter(
+            Score.quiz_id.in_(quiz_ids)
+        ).group_by(User.id).order_by(func.sum(Score.total_scored).desc()).limit(5).all()
+        
+        subject_data['top_scorers'] = top_scores
+        
+        # Get user attempt counts
+        attempts = db.session.query(
+            User.id,
+            User.username,
+            User.full_name,
+            func.count(Score.id).label('attempts')
+        ).join(Score).filter(
+            Score.quiz_id.in_(quiz_ids)
+        ).group_by(User.id).order_by(func.count(Score.id).desc()).all()
+        
+        for user_attempt in attempts:
+            subject_data['user_attempts'][user_attempt.id] = {
+                'username': user_attempt.username,
+                'full_name': user_attempt.full_name,
+                'attempts': user_attempt.attempts
+            }
+            subject_data['total_attempts'] += user_attempt.attempts
+        
+        summary_data.append(subject_data)
+    
+    return render_template('admin/summary.html', summary_data=summary_data)
