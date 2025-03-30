@@ -10,7 +10,7 @@ from controllers.admin import (
 # Import all functions from the user controller
 from controllers.user import (
     user_dashboard, user_view_subject, user_view_quiz, 
-    start_quiz, submit_quiz
+    start_quiz, submit_quiz, quiz_summary
 )
 
 app = Flask(__name__)
@@ -49,6 +49,7 @@ app.route('/user/subject/<int:subject_id>')(user_view_subject)
 app.route('/user/quiz/<int:quiz_id>')(user_view_quiz)
 app.route('/user/quiz/<int:quiz_id>/take')(start_quiz)
 app.route('/user/quiz/<int:quiz_id>/submit', methods=['POST'])(submit_quiz)
+app.add_url_rule('/user/summary', 'quiz_summary', quiz_summary)
 
 if __name__ == '__main__':
     app.run(debug=True)
