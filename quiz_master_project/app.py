@@ -30,6 +30,7 @@ app.route('/admin/chapter/<int:chapter_id>/quizzes')(admin.view_quizzes)
 app.route('/admin/chapter/<int:chapter_id>/quiz/new', methods=['GET', 'POST'])(admin.add_quiz)
 app.route('/admin/quiz/<int:quiz_id>/questions')(admin.view_questions)
 app.route('/admin/quiz/<int:quiz_id>/question/new', methods=['GET', 'POST'])(admin.add_question)
+app.route('/admin/question/<int:question_id>/delete')(admin.delete_question)
 
 # User Routes
 app.route('/user/dashboard')(user.user_dashboard)

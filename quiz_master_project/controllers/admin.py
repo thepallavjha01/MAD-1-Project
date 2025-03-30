@@ -181,3 +181,16 @@ def add_question(quiz_id):
     
     quiz = Quiz.query.get_or_404(quiz_id)
     return render_template('admin/question_form.html', quiz=quiz)
+
+def delete_question(question_id):
+    if not session.get('is_admin'):
+        return redirect(url_for('login'))
+    
+    question = Question.query.get_or_404(question_id)
+    quiz_id = question.quiz_id
+    
+    db.session.delete(question)
+    db.session.commit()
+    
+    flash('Question deleted successfully')
+    return redirect(url_for('view_questions', quiz_id=quiz_id))
