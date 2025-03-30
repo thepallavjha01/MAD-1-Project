@@ -7,8 +7,11 @@ from controllers.admin import (
     view_quizzes, add_quiz, view_questions, add_question, delete_question,
     admin_summary
 )
-# Import just what's available in the user controller
-from controllers.user import user_dashboard
+# Import all functions from the user controller
+from controllers.user import (
+    user_dashboard, user_view_subject, user_view_quiz, 
+    start_quiz, submit_quiz
+)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'
@@ -42,9 +45,10 @@ app.route('/admin/summary')(admin_summary)
 
 # User routes
 app.route('/user/dashboard')(user_dashboard)
-# Remove or comment out the routes that don't have corresponding functions
-# app.route('/user/quiz/<int:quiz_id>/take')(start_quiz)
-# app.route('/user/results')(view_results)
+app.route('/user/subject/<int:subject_id>')(user_view_subject)
+app.route('/user/quiz/<int:quiz_id>')(user_view_quiz)
+app.route('/user/quiz/<int:quiz_id>/take')(start_quiz)
+app.route('/user/quiz/<int:quiz_id>/submit', methods=['POST'])(submit_quiz)
 
 if __name__ == '__main__':
     app.run(debug=True)
