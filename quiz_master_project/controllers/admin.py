@@ -49,15 +49,11 @@ def delete_subject(subject_id):
     if not session.get('is_admin'):
         return redirect(url_for('login'))
     
-    try:
-        subject = Subject.query.get_or_404(subject_id)
-        db.session.delete(subject)
-        db.session.commit()
-        flash('Subject deleted successfully')
-    except Exception as e:
-        db.session.rollback()
-        flash(f'Error deleting subject: {str(e)}')
+    subject = Subject.query.get_or_404(subject_id)
+    db.session.delete(subject)
+    db.session.commit()
     
+    flash('Subject deleted successfully')
     return redirect(url_for('admin_dashboard'))
 
 # Chapter CRUD operations
@@ -85,6 +81,36 @@ def add_chapter(subject_id):
     
     subject = Subject.query.get_or_404(subject_id)
     return render_template('admin/chapter_form.html', subject=subject)
+
+def edit_chapter(chapter_id):
+    if not session.get('is_admin'):
+        return redirect(url_for('login'))
+    
+    chapter = Chapter.query.get_or_404(chapter_id)
+    
+    if request.method == 'POST':
+        chapter.name = request.form['name']
+        chapter.description = request.form['description']
+        
+        db.session.commit()
+        
+        flash('Chapter updated successfully')
+        return redirect(url_for('view_chapters', subject_id=chapter.subject_id))
+    
+    return render_template('admin/chapter_form.html', chapter=chapter, subject=chapter.subject)
+
+def delete_chapter(chapter_id):
+    if not session.get('is_admin'):
+        return redirect(url_for('login'))
+    
+    chapter = Chapter.query.get_or_404(chapter_id)
+    subject_id = chapter.subject_id
+    
+    db.session.delete(chapter)
+    db.session.commit()
+    
+    flash('Chapter deleted successfully')
+    return redirect(url_for('view_chapters', subject_id=subject_id))
 
 # Quiz CRUD operations
 def view_quizzes(chapter_id):

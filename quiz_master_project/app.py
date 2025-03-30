@@ -24,6 +24,8 @@ app.route('/admin/subject/<int:subject_id>/edit', methods=['GET', 'POST'])(admin
 app.route('/admin/subject/<int:subject_id>/delete')(admin.delete_subject)
 app.route('/admin/subject/<int:subject_id>/chapters')(admin.view_chapters)
 app.route('/admin/subject/<int:subject_id>/chapter/new', methods=['GET', 'POST'])(admin.add_chapter)
+app.route('/admin/chapter/<int:chapter_id>/edit', methods=['GET', 'POST'])(admin.edit_chapter)
+app.route('/admin/chapter/<int:chapter_id>/delete')(admin.delete_chapter)
 app.route('/admin/chapter/<int:chapter_id>/quizzes')(admin.view_quizzes)
 app.route('/admin/chapter/<int:chapter_id>/quiz/new', methods=['GET', 'POST'])(admin.add_quiz)
 app.route('/admin/quiz/<int:quiz_id>/questions')(admin.view_questions)

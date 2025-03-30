@@ -63,10 +63,10 @@
                                     <a href="{{ url_for('view_quizzes', chapter_id=chapter.id) }}" class="btn btn-info btn-sm mr-2">
                                         <i class="fas fa-tasks"></i> Quizzes
                                     </a>
-                                    <a href="#" class="btn btn-warning btn-sm mr-2">
+                                    <a href="{{ url_for('edit_chapter', chapter_id=chapter.id) }}" class="btn btn-warning btn-sm mr-2">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
-                                    <a href="#" class="btn btn-danger btn-sm" 
+                                    <a href="{{ url_for('delete_chapter', chapter_id=chapter.id) }}" class="btn btn-danger btn-sm" 
                                        onclick="return confirm('Are you sure you want to delete this chapter?')">
                                         <i class="fas fa-trash"></i> Delete
                                     </a>
